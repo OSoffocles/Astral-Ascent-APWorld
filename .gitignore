@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+*.apworld
+*.zip
+# local player options and generated seeds
+*.yaml
+!docs/**/*.yaml
+output/

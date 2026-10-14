@@ -7,7 +7,7 @@ Your heroes, spells, Zim-Zim upgrades, weapons and weapon passives come from the
 runs and in the Garden sends items to the other players: clearing rooms, beating bosses, saving lost Yalees,
 collecting auras, buying at the shops, claiming Sire Bapy achievements, Astral Void and Destiny Level progress.
 
-**Status:** beta (v0.1.0). Item and location IDs are fixed from this version on.
+**Status:** beta (v0.2.0). Item and location IDs are fixed from this version on.
 
 ## Features
 - **One-click setup:** the client finds the game, sets up a fresh save slot for your seed (tutorial done, every

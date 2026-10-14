@@ -124,9 +124,11 @@ def checked_locations(slot: dict[str, dict[str, Any]], destiny_levels: int,
         if slot.get("yaleePlace", {}).get(f"world_{w}_id_{n - 1}") == "saved":
             done.add(data.lost_yalee_location(w, n))
     capybara = slot.get("capybaraUnlocked", {})
-    for key, title, tiers in data.BAPY_ACHIEVEMENTS:  # Sire Bapy tiers whose reward was claimed
+    # Sire Bapy tiers reached ("new": the game marks every tier you reach, also mid-run in the run copy) or
+    # claimed ("unlocked"): the check is sent without claiming the reward first.
+    for key, title, tiers in data.BAPY_ACHIEVEMENTS:
         for tier in range(1, len(tiers) + 1):
-            if capybara.get(f"{key}*{tier}") == "unlocked":
+            if capybara.get(f"{key}*{tier}") in ("new", "unlocked"):
                 done.add(data.bapy_location(title, tier))
 
     milestones = min(void_checks, void_bosses_beaten(slot) // max(1, void_per_check))

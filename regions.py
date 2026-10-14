@@ -89,7 +89,8 @@ def bapy_locations(world: AstralAscentWorld) -> list[tuple[str, str, int, int]]:
             continue
         if key in data.BAPY_NEEDS_SPELL_PURCHASES and world.flags["spell_items"]:
             continue
-        for tier in range(o.sire_bapy_min_tier.value, min(o.sire_bapy_max_tier.value, len(tiers)) + 1):
+        highest = world.bapy_max_tier[data.BAPY_CATEGORY[key]]
+        for tier in range(o.sire_bapy_min_tier.value, min(highest, len(tiers)) + 1):
             destiny_level = tiers[tier - 1] if key == data.BAPY_DESTINY_LEVELS else 0
             if destiny_level > world.destiny_region_count:
                 continue
@@ -98,9 +99,9 @@ def bapy_locations(world: AstralAscentWorld) -> list[tuple[str, str, int, int]]:
 
 
 def add_checks_for_items(world: AstralAscentWorld, short: int) -> list[str]:
-    """Safeguard: a seed with more items than checks gets extra checks, in this order: Void milestones
-    (up to 100), Yalee Ticket shop milestones (up to the shop's size), the next Sire Bapy tier(s). Raises the
-    options too, so slot data and rules match. Returns what was added (for the warning)."""
+    """Safeguard: a seed with more items than checks gets extra checks, in this order: Void milestones (up to
+    100), Yalee Ticket shop milestones (up to the shop's size), one more Sire Bapy tier in every category. Raises
+    the options too, so slot data and rules match. Returns what was added (for the warning)."""
     o, player = world.options, world.player
     added: list[str] = []
 
@@ -127,14 +128,15 @@ def add_checks_for_items(world: AstralAscentWorld, short: int) -> list[str]:
         short -= shop_extra
         added.append(f"{shop_extra} Yalee Shop Checks (now {o.yalee_shop_checks.value})")
 
-    while short > 0 and o.sire_bapy_max_tier.value < 9:
-        o.sire_bapy_max_tier.value = max(o.sire_bapy_max_tier.value + 1, o.sire_bapy_min_tier.value)
+    while short > 0 and min(world.bapy_max_tier.values()) < 9:
+        for cat in world.bapy_max_tier:  # one more tier in every category
+            world.bapy_max_tier[cat] = max(world.bapy_max_tier[cat] + 1, o.sire_bapy_min_tier.value)
         new = [(name, bapy_region(world, key, tier, level)) for name, key, tier, level in bapy_locations(world)
                if name not in world.location_names_created]
         for name, region_name in new:
             add(region_name, name)
         short -= len(new)
-        added.append(f"{len(new)} Sire Bapy checks (Sire Bapy Max Tier now {o.sire_bapy_max_tier.value})")
+        added.append(f"{len(new)} Sire Bapy checks (one more tier per category)")
     return added
 
 

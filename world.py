@@ -39,6 +39,7 @@ class AstralAscentWorld(World):
     flags: dict[str, bool]
     destiny_region_count: int
     location_names_created: set[str]
+    bapy_max_tier: dict[str, int]
 
     def generate_early(self) -> None:
         o = self.options
@@ -58,6 +59,12 @@ class AstralAscentWorld(World):
             "weapon_items": bool(o.weapon_items), "passive_items": bool(o.passive_items),
         }
         self.power_total = len(items.upgrade_items(self))
+        # Sire Bapy: highest tier per category, from the preset or (Custom) the per-category options.
+        preset = o.sire_bapy_checks.current_key
+        if preset == "custom":
+            self.bapy_max_tier = {cat: getattr(o, field).value for field, cat in aa_options.BAPY_CATEGORY_FIELDS.items()}
+        else:
+            self.bapy_max_tier = {cat: data.BAPY_PRESETS[preset] for cat in data.BAPY_CATEGORIES}
         goal_level = o.goal_destiny_level.value if o.goal == o.goal.option_destiny_level else 0
         self.destiny_region_count = max(o.destiny_check_levels.value, goal_level)
 
@@ -100,7 +107,7 @@ class AstralAscentWorld(World):
         return {
             "hero_ids": self.hero_ids,
             "starting_hero_ids": data.STARTING_HERO_IDS,
-            "world_version": "0.1.0",
+            "world_version": "0.2.0",
             "location_power": rules.location_power_needed(self),  # location id -> upgrade items needed
             **self.options.as_dict(
                 "goal", "goal_destiny_level", "unique_heroes_required",

@@ -227,7 +227,7 @@ def boss_bonus_count(mode: int, world_slot: int) -> int:
 
 
 def bapy_location(title: str, tier: int) -> str:
-    """Claiming a Sire Bapy achievement tier (save capybaraUnlocked['<key>*<tier>'] = 'unlocked')."""
+    """Reaching a Sire Bapy achievement tier (save capybaraUnlocked['<key>*<tier>'] = 'new' or 'unlocked')."""
     return f"Sire Bapy: {title} {tier}"
 
 
@@ -237,6 +237,39 @@ BAPY_HERO = {"ayla_levelMax": "Ayla", "kiran_levelMax": "Kiran", "octave_levelMa
              "unlock_yamat": "Yamat", "unlock_arven": "Arven"}
 BAPY_NEEDS_SPELL_PURCHASES = {"merchant_boughtSpells", "merchantBuyEverything"}
 BAPY_DESTINY_LEVELS = "gameCompleted_destinyLevel"  # tier n = beat Destiny Level n
+
+
+# Sire Bapy achievements by category (options: one "highest tier" per category, or a preset).
+BAPY_CATEGORIES = {
+    "Combat": ["enemyKills_elites", "enemyKills_bouncingShroom", "enemyKills_firePortal", "highestDamageMade",
+               "enemyKills_clam", "enemyKills_redDiamond", "obj_enemy_pinata", "enemyKills_miniboss",
+               "uniqueMinibossDefeated", "summonZodiacs", "numberOfUspellUse", "lifeSacrificed_pavoRuins",
+               "obj_boss_ophiuchus", "meet_zodiacSign"],
+    "Challenges": ["perfectedFightRooms", "enemiesKilledWithoutBeingHit", "fightRoomChallengeSuccess",
+                   "challengesSuccess"],
+    "World Feats": [f"{key}_w{w}" for key in ("enemyKills", "uniqueZodiacsDefeated", "zodiacPerfected",
+                                             "challengesSuccess") for w in range(1, 5)],
+    "Builds": ["spellMaxAffinity", "differentSpellsUsed", "gambitEquiped", "legendarySpell", "numberOfStoneEquiped",
+               "numberOfAurasEquiped", "astralAuraEquiped", "astralGambitEquiped", "numberOfEchoEquiped"],
+    "Exploration": ["numberOfRuns", "crystalsCollected", "chestOpened", "yaleesSaved", "keysUsed",
+                    "difficultyStarsUsed", "findNest", "meet_chameleon", "dialogueBench", "visits_cetus",
+                    "beSavedBySova"],
+    "Shops & NPCs": ["merchantBuys", "merchant_boughtSpells", "merchantBuyEverything", "andromedaBarUse",
+                     "botanist_unlockedRows", "botanist_eatFruits", "relicNPC_unlockedRelics", "stylist_unlockedColors",
+                     "papaYalee_unlockedMemories"],
+    "Heroes": ["ayla_levelMax", "kiran_levelMax", "octave_levelMax", "calie_levelMax", "yamat_levelMax",
+               "arven_levelMax", "unlock_octave", "unlock_calie", "unlock_yamat", "unlock_arven"],
+    "Destiny": ["pathOfDestinies_unlocked", "gameCompleted_destinyLevel", "numberOfDestinyFragment"],
+}
+BAPY_CATEGORY = {key: cat for cat, keys in BAPY_CATEGORIES.items() for key in keys}
+assert set(BAPY_CATEGORY) == {key for key, _, _ in BAPY_ACHIEVEMENTS}, "every achievement needs one category"
+# Presets: highest tier per category (Custom = the per-category options).
+BAPY_PRESETS = {
+    "off": 0,
+    "light": 1,       # tier 1 of everything: ~70 checks
+    "standard": 2,    # tiers 1-2: ~125 checks
+    "full": 9,        # every tier: ~210 checks (long grinds included)
+}
 
 
 def void_boss_location(milestone: int) -> str:
